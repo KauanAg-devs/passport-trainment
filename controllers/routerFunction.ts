@@ -2,15 +2,16 @@ import Crud from './crud';
 import express, { Application } from 'express';
 import Middlewares from './middlewares';
 import passport from 'passport';
-import session from 'express-session'
+import session from 'express-session';
 
 const crud = new Crud();
 const middleware = new Middlewares();
 
-
 class RouterHandler {
     public async getHandler(req: any, res: any) {
         const foundUser = await crud.get(req.body);
+        console.log('found user:'+ foundUser);
+        
         res.status(200).json({ message: foundUser });
     }
 
@@ -51,9 +52,13 @@ class RouterFunction {
                 saveUninitialized: true,
             })
         );
-        middleware.isUserAccepted()
-    
-        Router.post('/login', passport.authenticate('local', {failureRedirect: `/signin`}),this.router.getHandler);
+        middleware.isUserAccepted();
+
+        Router.post(
+            '/login',
+            passport.authenticate('local', { failureRedirect: `/` }),
+            this.router.getHandler
+        );
         Router.post('/signin', this.router.postHandler);
         Router.put('/updateAccount', this.router.putHandler);
         Router.delete('/deleteAccount', this.router.deleteHandler);

@@ -27,19 +27,17 @@ export default class Middlewares {
 
         passport.use(new Local.Strategy({usernameField: 'email'},async (email, password, done)=>{
            const foundUser = await crud.get({email, password})
-           if (!foundUser) return done(null, false);
-           console.log(foundUser);
-           
+           if (!foundUser) return done(null, false);           
            return done(null, foundUser) 
         }))
 
         passport.serializeUser((user, done)=>{
-            done(null, user)
+            const foundUser = user as {email: string, password: string, _id: string}
+            done(null, foundUser)
         })
 
         passport.deserializeUser((id, done) => {
             userModel.findById(id);
-            console.log(id);
         });
 
         Router.use(passport.authenticate('session'));
